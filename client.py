@@ -108,8 +108,8 @@ async def node_events():
 
             logger.info(("{}: {}".format(receive_time, post_data)))
             logging.info("Post data {} ", post_data)
-            block_data = json.loads(post_data['message']['block'])
-            block_hash = block_data['message']['hash']
+            block_data = post_data['message']['block']
+            block_hash = post_data['message']['hash']
             past_blocks.append((block_data, block_hash, receive_time))
 
             logging.info(past_blocks)
