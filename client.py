@@ -108,17 +108,9 @@ async def node_events():
 
             logger.info(("{}: {}".format(receive_time, post_data)))
             logging.info("Post data {} ", post_data)
-            block_data = json.loads(post_data['block'])
-
-            # receive block
-            if not "nano" in block_data['link'] or not "xrb" in block_data['link']:
-                block_link = block_data['link']
-                logger.info(("Hash Link {}".format(block_link)))
-                past_blocks.append((block_data, block_link, receive_time))
-            else:
-                block_hash = post_data['hash']
-                past_blocks.append((block_data, block_hash, receive_time))
-                logger.info(("Hash block (non-link) {}".format(block_data)))
+            block_data = json.loads(post_data['message']['block'])
+            block_hash = block_data['message']['hash']
+            past_blocks.append((block_data, block_hash, receive_time))
 
             logging.info(past_blocks)
 
