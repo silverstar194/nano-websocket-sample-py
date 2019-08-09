@@ -107,7 +107,7 @@ async def node_events():
             post_data = json.loads(result)
 
             logger.info(("{}: {}".format(receive_time, post_data)))
-
+            logging.info("Post data {} ", post_data)
             block_data = json.loads(post_data['block'])
 
             # receive block
