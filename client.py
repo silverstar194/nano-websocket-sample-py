@@ -1,8 +1,11 @@
+import socket
+import time
+import json
+import logging
+import sys
 import asyncio
 import websockets
 import argparse
-import socket, time, json, logging, sys
-from logging.handlers import RotatingFileHandler
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
@@ -10,6 +13,8 @@ import tornado.tcpserver
 import tornado.web
 import tornado.websocket
 from collections import defaultdict
+from logging.handlers import RotatingFileHandler
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--host', dest='host', type=str, default='[::1]')
@@ -17,21 +22,20 @@ parser.add_argument('--port', dest='port', type=str, default='7078')
 parser.add_argument('--silent', dest='silent', type=str, default='True')
 args = parser.parse_args()
 
-
 logger = logging.getLogger(__name__)
 
-file_handler = RotatingFileHandler('server.log', mode='a', maxBytes=5*1024, backupCount=2, encoding=None, delay=0)
+file_handler = RotatingFileHandler('websocket_server.log', mode='a', maxBytes=5*1024, backupCount=2, encoding=None, delay=0)
 
 handlers = [file_handler]
-
-if args.silent == 'False':
-    handlers.append(logging.StreamHandler(sys.stdout))
 
 logging.basicConfig(
     level=logging.DEBUG,
     format='[%(levelname)s] %(asctime)s %(message)s',
     handlers=handlers
 )
+
+if args.silent == 'False':
+    handlers.append(logging.StreamHandler(sys.stdout))
 
 client_connections = defaultdict(list)
 client_hashes = defaultdict(list)
@@ -100,7 +104,7 @@ async def node_events():
         await websocket.send(json.dumps(subscription("confirmation", ack=True)))
         logger.info(await websocket.recv())  # ack
 
-        while 1:
+        while True:
             logger.info("Waiting for new block from node...")
             result = (await websocket.recv())
             logger.info("Received block %s ", result)
