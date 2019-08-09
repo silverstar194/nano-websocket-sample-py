@@ -14,7 +14,7 @@ from collections import defaultdict
 parser = argparse.ArgumentParser()
 parser.add_argument('--host', dest='host', type=str, default='[::1]')
 parser.add_argument('--port', dest='port', type=str, default='7078')
-parser.add_argument('--silent', dest='silent', type=bool, default=False)
+parser.add_argument('--silent', dest='silent', type=str, default='True')
 args = parser.parse_args()
 
 
@@ -24,7 +24,7 @@ file_handler = RotatingFileHandler('server.log', mode='a', maxBytes=5*1024, back
 
 handlers = [file_handler]
 
-if args.silent:
+if args.silent == 'False':
     handlers.append(logging.StreamHandler(sys.stdout))
 
 logging.basicConfig(
