@@ -132,7 +132,7 @@ async def node_events():
 
 async def socket_server():
     # websocket server
-    myIP = socket.gethostbyname(socket.gethostname())
+    myIP = socket.gethostbyname("127.0.0.1")
     logger.info('Websocket Server Started at %s' % myIP)
 
     # callback server
