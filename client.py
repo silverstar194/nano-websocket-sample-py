@@ -72,7 +72,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
                 ##handle past blocks for race condition
                 for block in past_blocks:
-                    logger.info("{}".format(block[1]))
+                    logger.info("Checking past blocks {} {}".format(block[1], ws_data['hash']))
                     if block[1] == ws_data['hash']:
                         for client in client_connections[ws_data['hash']]:
                             logger.info("{} {}: {}".format(block[0], block[1], block[2]))
