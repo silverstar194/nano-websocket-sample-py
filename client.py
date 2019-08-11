@@ -24,7 +24,7 @@ args = parser.parse_args()
 
 logger = logging.getLogger(__name__)
 
-file_handler = RotatingFileHandler('websocket_server.log', mode='a', maxBytes=5*1024, backupCount=2, encoding=None, delay=0)
+file_handler = RotatingFileHandler('websocket_server.log', mode='a', maxBytes=5*1024*1024, backupCount=2, encoding=None, delay=0)
 
 handlers = [file_handler]
 
@@ -132,7 +132,7 @@ async def node_events():
 
 async def socket_server():
     # websocket server
-    myIP = socket.gethostbyname(socket.gethostname())
+    myIP = socket.gethostbyname("127.0.0.1")
     logger.info('Websocket Server Started at %s' % myIP)
 
     # callback server
