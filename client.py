@@ -52,7 +52,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         return True
 
     def open(self):
-        logger.info("WebSocket opened: {}".format(self))
+        logger.info("newyork.ws.nanospeed.live opened: {}".format(self))
 
     @tornado.gen.coroutine
     def on_message(self, message):
@@ -96,6 +96,9 @@ application = tornado.web.Application([
 ])
 
 async def node_events():
+    while 1:
+        print("node")
+        time.sleep(1)
     async with websockets.connect(f"ws://{args.host}:{args.port}") as websocket:
 
         # Subscribe to both confirmation and votes
@@ -133,6 +136,7 @@ async def node_events():
 async def socket_server():
     # websocket server
     myIP = socket.gethostbyname("127.0.0.1")
+    print('Websocket Server Started at %s' % myIP)
     logger.info('Websocket Server Started at %s' % myIP)
 
     # callback server
@@ -141,10 +145,7 @@ async def socket_server():
     # infinite loop
     tornado.ioloop.IOLoop.instance().start()
 
-async def main():
-    await node_events()
-    await socket_server()
-
 loop = asyncio.get_event_loop()
-loop.create_task(main())
+loop.create_task(socket_server())
+loop.create_task(node_events())
 loop.run_forever()
