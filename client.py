@@ -142,8 +142,6 @@ async def socket_server():
     # callback server
     application.listen(7090)
 
-    # infinite loop
-    tornado.ioloop.IOLoop.instance().start()
 
 loop = asyncio.get_event_loop()
 loop.create_task(socket_server())
