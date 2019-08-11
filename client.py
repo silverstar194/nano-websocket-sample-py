@@ -24,7 +24,7 @@ args = parser.parse_args()
 
 logger = logging.getLogger(__name__)
 
-file_handler = RotatingFileHandler('websocket_server.log', mode='a', maxBytes=5*1024, backupCount=2, encoding=None, delay=0)
+file_handler = RotatingFileHandler('websocket_server.log', mode='a', maxBytes=5*1024*1024, backupCount=2, encoding=None, delay=0)
 
 handlers = [file_handler]
 
