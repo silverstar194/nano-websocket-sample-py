@@ -1,1 +1,2 @@
 websockets
+tornado==6.0.3
