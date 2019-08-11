@@ -57,15 +57,12 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     @tornado.gen.coroutine
     def on_message(self, message):
         logger.info('Message from client {}: {}'.format(self, message))
-        logger.info(message)
         if message != "Connected":
             try:
                 ws_data = json.loads(message)
                 if 'hash' not in ws_data:
                     logger.error('Incorrect data from client: {}'.format(ws_data))
                     raise Exception('Incorrect data from client: {}'.format(ws_data))
-
-                logger.info(ws_data['hash'])
 
                 client_connections[ws_data['hash']].append(self)
                 client_hashes[self].append(ws_data['hash'])
@@ -75,9 +72,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                     logger.info("Checking past blocks {} {}".format(block[1], ws_data['hash']))
                     if block[1] == ws_data['hash']:
                         for client in client_connections[ws_data['hash']]:
-                            logger.info("{} {}: {}".format(block[0], block[1], block[2]))
+                            logger.info("Found block {} {}: {}".format(block[0], block[1], block[2]))
                             client.write_message(json.dumps({"hash":block[1], "time":block[2]}))
-                            logger.info("Sent data")
 
             except Exception as e:
                 logger.error("Error {}".format(e))
@@ -105,19 +101,14 @@ async def node_events():
         logger.info(await websocket.recv())  # ack
 
         while True:
-            logger.info("Waiting for new block from node...")
             result = (await websocket.recv())
-            logger.info("Received block %s ", result)
             receive_time = int(round(time.time() * 1000))
             post_data = json.loads(result)
 
-            logger.info(("{}: {}".format(receive_time, post_data)))
-            logging.info("Post data {} ", post_data)
+            logger.info(("Received block from node {}: {}".format(receive_time, post_data)))
             block_data = post_data['message']['block']
             block_hash = post_data['message']['hash']
             past_blocks.append((block_data, block_hash, receive_time))
-
-            logging.info(past_blocks)
 
             if len(past_blocks) > 500:
                 del past_blocks[0]
@@ -125,9 +116,7 @@ async def node_events():
             if block_hash in client_hashes:
                 clients = client_connections[block_hash]
                 for client in clients:
-                    logger.info("{}: {} {}".format(receive_time, client, post_data))
                     client.write_message(json.dumps({"block_data": block_data, "time": receive_time}))
-                    logger.info("Sent data")
 
 
 async def socket_server():
