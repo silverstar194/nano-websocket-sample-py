@@ -96,9 +96,6 @@ application = tornado.web.Application([
 ])
 
 async def node_events():
-    while 1:
-        print("node")
-        time.sleep(1)
     async with websockets.connect(f"ws://{args.host}:{args.port}") as websocket:
 
         # Subscribe to both confirmation and votes
