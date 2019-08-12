@@ -38,6 +38,7 @@ if args.silent == 'False':
     handlers.append(logging.StreamHandler(sys.stdout))
 
 client_connections = defaultdict(list)
+client_hashes = []
 past_blocks = []
 
 def subscription(topic: str, ack: bool=False, options: dict=None):
@@ -63,6 +64,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                     raise Exception('Incorrect data from client: {}'.format(ws_data))
 
                 client_connections[ws_data['hash']].append(self)
+                client_hashes.append(ws_data['hash'])
                 logger.info('Message from client {}'.format(ws_data['hash']))
 
                 ##handle past blocks for race condition
@@ -103,15 +105,15 @@ async def node_events():
             receive_time = int(round(time.time() * 1000))
             post_data = json.loads(result)
 
-            logger.info(("Received block from node {}: {}".format(receive_time, post_data)))
             block_data = post_data['message']['block']
             block_hash = post_data['message']['hash']
             past_blocks.append((block_data, block_hash, receive_time))
+            logger.info(("Received block {}".format(block_hash)))
 
             if len(past_blocks) > 500:
                 del past_blocks[0]
 
-            if block_hash in client_connections:
+            if block_hash in client_hashes:
                 clients = client_connections[block_hash]
                 for client in clients:
                     client.write_message(json.dumps({"block_data": block_data, "time": receive_time}))
