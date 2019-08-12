@@ -29,7 +29,7 @@ file_handler = RotatingFileHandler('websocket_server.log', mode='a', maxBytes=5*
 handlers = [file_handler]
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='[%(levelname)s] %(asctime)s %(message)s',
     handlers=handlers
 )
