@@ -56,7 +56,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
     @tornado.gen.coroutine
     def on_message(self, message):
-        logger.info('Message from client {}: {}'.format(self, message))
         if message != "Connected":
             try:
                 ws_data = json.loads(message)
@@ -66,6 +65,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
                 client_connections[ws_data['hash']].append(self)
                 client_hashes[self].append(ws_data['hash'])
+                logger.info('Message from client {}'.format(ws_data['hash']))
 
                 ##handle past blocks for race condition
                 for block in past_blocks:
