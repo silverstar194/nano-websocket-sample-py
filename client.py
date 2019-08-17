@@ -104,6 +104,7 @@ async def node_events():
             result = (await websocket.recv())
             receive_time = int(round(time.time() * 1000))
             post_data = json.loads(result)
+            logger.info(post_data)
 
             block_data = post_data['message']['block']
             block_hash = post_data['message']['hash']
