@@ -121,12 +121,11 @@ async def node_events():
                             client.write_message(json.dumps({"block_data": block_data, "time": receive_time}))
         except Exception as e:
             logger.error("Exception on node events %s", e)
-            
+
 
 async def socket_server():
     # websocket server
     myIP = socket.gethostbyname("127.0.0.1")
-    print('Websocket Server Started at %s' % myIP)
     logger.info('Websocket Server Started at %s' % myIP)
 
     # callback server
