@@ -92,33 +92,36 @@ application = tornado.web.Application([
 ])
 
 async def node_events():
-    async with websockets.connect(f"ws://{args.host}:{args.port}") as websocket:
+    while True:
+        try:
+            async with websockets.connect(f"ws://{args.host}:{args.port}") as websocket:
 
-        # Subscribe to both confirmation and votes
-        # You can also add options here following instructions in
-        #   https://github.com/nanocurrency/nano-node/wiki/WebSockets
-        await websocket.send(json.dumps(subscription("confirmation", ack=True)))
-        logger.info(await websocket.recv())  # ack
+                # Subscribe to both confirmation and votes
+                # You can also add options here following instructions in
+                #   https://github.com/nanocurrency/nano-node/wiki/WebSockets
+                await websocket.send(json.dumps(subscription("confirmation", ack=True)))
+                logger.info(await websocket.recv())  # ack
 
-        while True:
-            result = (await websocket.recv())
-            receive_time = int(round(time.time() * 1000))
-            post_data = json.loads(result)
-            logger.info(post_data)
+                while True:
+                    result = (await websocket.recv())
+                    receive_time = int(round(time.time() * 1000))
+                    post_data = json.loads(result)
 
-            block_data = post_data['message']['block']
-            block_hash = post_data['message']['hash']
-            past_blocks.append((block_data, block_hash, receive_time))
-            logger.info(("Received block {}".format(block_hash)))
+                    block_data = post_data['message']['block']
+                    block_hash = post_data['message']['hash']
+                    past_blocks.append((block_data, block_hash, receive_time))
+                    logger.info(("Received block {}".format(block_hash)))
 
-            if len(past_blocks) > 500:
-                del past_blocks[0]
+                    if len(past_blocks) > 500:
+                        del past_blocks[0]
 
-            if block_hash in client_hashes:
-                clients = client_connections[block_hash]
-                for client in clients:
-                    client.write_message(json.dumps({"block_data": block_data, "time": receive_time}))
-
+                    if block_hash in client_hashes:
+                        clients = client_connections[block_hash]
+                        for client in clients:
+                            client.write_message(json.dumps({"block_data": block_data, "time": receive_time}))
+        except Exception as e:
+            logger.error("Exception on node events %s", e)
+            
 
 async def socket_server():
     # websocket server
