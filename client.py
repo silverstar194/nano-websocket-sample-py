@@ -99,12 +99,12 @@ async def node_events():
                 # Subscribe to both confirmation and votes
                 # You can also add options here following instructions in
                 #   https://github.com/nanocurrency/nano-node/wiki/WebSockets
-                await websocket.send(json.dumps(subscription("confirmation", ack=True)))
+                await websocket.send(json.dumps(subscription("confirmation", ack=True, options={"include_election_info": True})))
                 logger.info(await websocket.recv())  # ack
 
                 while True:
                     result = (await websocket.recv())
-                    receive_time = int(round(time.time() * 1000))
+                    receive_time = post_data['message']['election_info']['time']
                     post_data = json.loads(result)
 
                     block_data = post_data['message']['block']
