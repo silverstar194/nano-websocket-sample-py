@@ -104,7 +104,7 @@ async def node_events():
 
                 while True:
                     result = (await websocket.recv())
-                post_data = json.loads(result)
+                    post_data = json.loads(result)
                     receive_time = post_data['message']['election_info']['time']
 
                     block_data = post_data['message']['block']
