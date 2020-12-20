@@ -120,17 +120,19 @@ async def node_events():
                         for client in clients:
                             client.write_message(json.dumps({"block_data": block_data, "time": receive_time}))
         except Exception as e:
-            logger.error("Exception on node events %s", e)
+            logger.error("Exception on node_events %s", e)
 
 
 async def socket_server():
     # websocket server
-    myIP = socket.gethostbyname("127.0.0.1")
-    logger.info('Websocket Server Started at %s' % myIP)
+    try:
+        myIP = socket.gethostbyname("127.0.0.1")
+        logger.info('Websocket Server Started at %s' % myIP)
 
-    # callback server
-    application.listen(7090)
-
+        # callback server
+        application.listen(7090)
+    except Exception as e:
+        logger.error("Exception socket_server %s", e)
 
 loop = asyncio.get_event_loop()
 loop.create_task(socket_server())
